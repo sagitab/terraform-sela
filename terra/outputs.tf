@@ -1,11 +1,19 @@
-output "web1_container_id" {
-  value = module.web1.container_id
+output "web_container_ids" {
+  description = "IDs of all Nginx containers"
+  value       = module.web.container_ids
 }
 
-output "web1_container_name" {
-  value = module.web1.container_name
+output "web_container_names" {
+  description = "Names of all Nginx containers"
+  value       = module.web.container_names
 }
 
-output "web1_exposed_port" {
-  value = module.web1.exposed_port
+output "web_exposed_ports" {
+  description = "Exposed host ports of all Nginx containers"
+  value       = module.web.exposed_ports
+}
+
+output "web_container_ips" {
+  description = "Internal Docker network IPs of all Nginx containers"
+  value       = module.web.container_ips
 }

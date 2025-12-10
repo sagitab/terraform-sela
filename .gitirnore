@@ -4,7 +4,7 @@
 .terraform/
 .terraform.lock.hcl
 crash.log
-
+secrets.tfvars
 # Override files
 *.tfvars
 

@@ -6,20 +6,24 @@ terraform {
     }
   }
 }
-
-# Pull the Nginx image
 resource "docker_image" "nginx" {
-  name = var.image_tag
+  name         = var.image_tag
+  force_remove = true
 }
 
-# Run the Nginx container
 resource "docker_container" "nginx" {
-  name  = var.container_name
+  count = var.instance_count
+
+  name  = "${var.container_name}-${count.index + 1}"
   image = docker_image.nginx.name
+
+  networks_advanced {
+    name = var.network_name
+  }
 
   ports {
     internal = 80
-    external = var.external_port
+    external = var.external_port + count.index
   }
 
   restart = "unless-stopped"
