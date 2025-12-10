@@ -1,0 +1,23 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+
+# Override files
+*.tfvars
+
+# Local .env files
+.env
+.env.*.local
+
+# Editor and OS files
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+docker-compose.override.yml
