@@ -1,0 +1,30 @@
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0"
+    }
+  }
+}
+
+provider "docker" {}
+
+# Pull the Nginx image
+resource "docker_image" "nginx" {
+  name = var.image_tag
+}
+
+# Run the Nginx container
+resource "docker_container" "nginx" {
+  name  = var.container_name           # container name
+  image = docker_image.nginx.name
+
+  ports {
+    internal = 80              # container port
+    external = var.external_port            # host port
+  }
+
+  restart = "unless-stopped"   # optional: restart policy
+}

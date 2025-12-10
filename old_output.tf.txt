@@ -1,0 +1,14 @@
+output "container_id" {
+  description = "The ID of the Docker container"
+  value       = docker_container.nginx.id
+}
+
+output "container_name" {
+  description = "The name of the Docker container"
+  value       = docker_container.nginx.name
+}
+
+output "exposed_port" {
+  description = "The host port exposed by the Docker container"
+  value       = docker_container.nginx.ports[0].external
+}
