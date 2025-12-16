@@ -1,4 +1,4 @@
-# modules/app/main.tf
+# main.tf (for the 'app' module)
 terraform {
   required_providers {
     docker = {
@@ -7,42 +7,50 @@ terraform {
     }
   }
 }
+
+# ----------------------------------------------------
+# 1. Image Resource (Your Application Image)
+# ----------------------------------------------------
 resource "docker_image" "app" {
+  # This should reference the image that contains your Flask application
+  # For example: "sagisen/whether_api:latest"
   name         = var.image_tag
-  force_remove = true
+  keep_locally = true # Keep the image even after 'terraform destroy'
 }
 
+# ----------------------------------------------------
+# 2. Container Resource (The Flask App)
+# ----------------------------------------------------
 resource "docker_container" "app" {
-  name  = var.container_name
+  name  = var.container_name # e.g., "flask-app-service"
   image = docker_image.app.name
 
-  # Networking: Connect to the custom network
+  # Ensure the container is restarted if it stops unexpectedly
+  restart = "unless-stopped"
+
+  # Map the internal application port (5000) to an external port
+  # so you can access the app from your host machine (e.g., http://localhost:8888)
+  ports {
+    internal = var.internal_port # 5000 (from your app.run)
+    external = var.external_port # e.g., 8888
+  }
+
+  # Connect to the same Docker network as the database container
   networks_advanced {
     name = var.network_name
   }
 
-  # Ports: Map internal application port to external host port
-  ports {
-    internal = var.internal_port
-    external = var.external_port
-  }
-
-  # Environment Variables
-  # The 'for' expression converts the map(string) variable into the 
-  # required list of strings ["KEY=VALUE", "KEY2=VALUE2"] format.
+  # Environment Variables (CRITICAL for the Python app)
+  # These match the os.getenv() calls in your Python code exactly.
   env = [
-    for k, v in var.environment_vars : "${k}=${v}"
+    "DB_HOST=${var.db_host}",      # The hostname/service name of the DB container
+    "DB_USER=${var.db_user}",
+    "DB_PASS=${var.db_password}",  # Note the app expects 'DB_PASS'
+    "DB_NAME=${var.db_name}",      # Note the app expects 'DB_NAME'
+    "FLASK_ENV=development"        # Example Flask environment setting
   ]
 
-  # Health Check Implementation
-  healthcheck {
-    # Check command: Use CMD-SHELL to run a curl command against the internal port
-    test = ["CMD-SHELL", "curl --fail http://localhost:${var.internal_port}/health || exit 1"]
-    interval = "10s"
-    timeout  = "3s"
-    retries  = 3
-    start_period = "5s" # Give the app 5 seconds to start up before checking
-  }
-
-  restart = "unless-stopped"
+  # Ensure the DB container is ready before attempting to create the app container
+  # This reduces connection errors on initial deployment.
+  # need to add depend on
 }

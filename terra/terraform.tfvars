@@ -1,3 +1,5 @@
-external_port  = 8082
-db_user      = "appuser"
-db_password  = "sagi123" 
+external_port = 8082
+db_user       = "root"
+db_password   = "DataL123"
+db_host       = "mysql-service"
+db_name       = "flask_db"

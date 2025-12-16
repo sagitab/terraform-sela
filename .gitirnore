@@ -5,6 +5,7 @@
 .terraform.lock.hcl
 crash.log
 secrets.tfvars
+.terraform
 # Override files
 *.tfvars
 
@@ -21,3 +22,5 @@ Thumbs.db
 # Docker
 *.log
 docker-compose.override.yml
+# files
+commands.txt

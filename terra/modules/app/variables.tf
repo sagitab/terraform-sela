@@ -30,3 +30,25 @@ variable "environment_vars" {
   type        = map(string)
   default     = {}
 }
+# variables to ADD to modules/app/variables.tf
+
+variable "db_user" {
+  description = "The username to connect to the database."
+  type        = string
+}
+
+variable "db_password" {
+  description = "The password for the database user."
+  type        = string
+  sensitive   = true 
+}
+
+variable "db_host" {
+  description = "The name of the database schema to connect to."
+  type        = string
+}
+
+variable "db_name" {
+  description = "The name of the database schema to connect to."
+  type        = string
+}

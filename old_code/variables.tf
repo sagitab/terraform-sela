@@ -1,12 +1,12 @@
 # modules/db/variables.tf
 
 variable "db_name" {
-  description = "The name for the database service container (used as the network hostname)."
+  description = "The name for the database service container."
   type        = string
 }
 
 variable "image_tag" {
-  description = "The Docker image tag for the database (e.g., mysql:8.0)."
+  description = "The Docker image tag for the database (e.g., postgres:latest)."
   type        = string
 }
 
@@ -16,18 +16,17 @@ variable "network_name" {
 }
 
 variable "db_user" {
-  description = "The MySQL database user name."
+  description = "The PostgreSQL/MySQL database user name."
   type        = string
-  sensitive   = true # Mark password as sensitive
 }
 
 variable "db_password" {
-  description = "The MySQL database password."
+  description = "The PostgreSQL/MySQL database password."
   type        = string
   sensitive   = true # Mark password as sensitive
 }
 
 variable "db_schema" {
-  description = "The initial schema name to create."
+  description = "The initial schema name to create (e.g., my_app_db)."
   type        = string
 }

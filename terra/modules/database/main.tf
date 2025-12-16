@@ -1,5 +1,4 @@
 # modules/db/main.tf
-# modules/app/main.tf
 terraform {
   required_providers {
     docker = {
@@ -8,43 +7,49 @@ terraform {
     }
   }
 }
+
 # 1. Docker Volume for Data Persistence
-# This ensures data persists even if the container is destroyed and recreated.
+# This ensures MySQL data persists across container restarts.
 resource "docker_volume" "db_data" {
   name = "${var.db_name}-data"
 }
 
 # 2. Docker Image
 resource "docker_image" "db" {
-  name         = var.image_tag
+  # This will pull the tag defined by the root module, e.g., 'mysql:8.0'
+  name         = var.image_tag 
   force_remove = true
 }
 
-# 3. Database Container Deployment (PostgreSQL Example)
+# 3. Database Container Deployment (MySQL)
 resource "docker_container" "db" {
   name  = var.db_name
   image = docker_image.db.name
 
-  # Security: Expose ONLY to internal network
-  # No 'ports' block is used, so no host ports are exposed.
+  # Security: Attach to an internal network, preventing external access 
+  # unless explicitly mapped in the root configuration.
   networks_advanced {
     name = var.network_name
   }
   
-  # Environment Variables for Credentials
-  # PostgreSQL uses these specific environment variables for configuration
-  env = [
-    "POSTGRES_USER=${var.db_user}",
-    "POSTGRES_PASSWORD=${var.db_password}",
-    "POSTGRES_DB=${var.db_schema}"
+  # Environment Variables for MySQL Initialization
+  # These variables tell the official MySQL Docker image how to set up the DB.
+# modules/db/main.tf (Cleaned env block)
+
+env = [
+    # Required to set the root user password (used by app if DB_USER=root)
+    "MYSQL_ROOT_PASSWORD=${var.db_password}", 
+    # Required to create the database schema
+    "MYSQL_DATABASE=${var.db_name}",         
   ]
 
-  # Volume: Mount the persistent volume
+  # Volume: Mount the persistent volume to the MySQL data directory
   volumes {
-    # This is the standard data directory for PostgreSQL
-    container_path = "/var/lib/postgresql/data" 
+    # Standard location for MySQL data files
+    container_path = "/var/lib/mysql" 
     volume_name    = docker_volume.db_data.name
   }
   
   restart = "unless-stopped"
+
 }
