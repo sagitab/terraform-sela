@@ -18,6 +18,10 @@ variable "image_tag" {
 # DB Module Variables
 # -----------------
 
+variable "instance_id" {
+  type    = number
+  default = 0
+}
 # Root level variables.tf
 
 variable "db_user" {

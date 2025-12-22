@@ -23,7 +23,7 @@ resource "docker_image" "db" {
 
 # 3. Database Container Deployment (MySQL)
 resource "docker_container" "db" {
-  name  = var.db_name
+  name  = "${var.container_name}"
   image = docker_image.db.name
 
   # Security: Attach to an internal network, preventing external access 

@@ -4,7 +4,11 @@ variable "db_name" {
   description = "The name for the database service container (used as the network hostname)."
   type        = string
 }
-
+variable "module_count" {
+  description = "Number of Nginx containers to deploy"
+  type        = number
+  default     = 1
+}
 variable "image_tag" {
   description = "The Docker image tag for the database (e.g., mysql:8.0)."
   type        = string
@@ -29,5 +33,10 @@ variable "db_password" {
 
 variable "db_schema" {
   description = "The initial schema name to create."
+  type        = string
+}
+
+variable "container_name" {
+  description = "The prefix for the database container name"
   type        = string
 }

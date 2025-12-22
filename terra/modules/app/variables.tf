@@ -4,6 +4,11 @@ variable "container_name" {
   description = "Name for the application container."
   type        = string
 }
+variable "module_count" {
+  description = "Number of Nginx containers to deploy"
+  type        = number
+  default     = 1
+}
 
 variable "image_tag" {
   description = "The Docker image tag for the application (Node.js or Python app)."
@@ -51,4 +56,9 @@ variable "db_host" {
 variable "db_name" {
   description = "The name of the database schema to connect to."
   type        = string
+}
+
+variable "instance_id" {
+  type        = number
+  description = "The index from the root module count"
 }

@@ -1,4 +1,4 @@
-variable "instance_count" {
+variable "module_count" {
   description = "Number of Nginx containers to deploy"
   type        = number
   default     = 1
@@ -24,4 +24,9 @@ variable "network_name" {
   description = "Docker network name to attach the containers to"
   type        = string
   default     = "bridge"
+}
+
+variable "instance_id" {
+  type        = number
+  description = "The index from the root module count"
 }

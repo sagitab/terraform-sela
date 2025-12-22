@@ -7,7 +7,11 @@ terraform {
     }
   }
 }
-
+locals {
+    # IF workspace is staging prot 8898 and if prod the port is 8908
+  staging_bonus = terraform.workspace == "staging" ? 10 : 0
+  prod_bonus = terraform.workspace == "prod" ? 20 : 0
+}
 # ----------------------------------------------------
 # 1. Image Resource (Your Application Image)
 # ----------------------------------------------------
@@ -22,7 +26,8 @@ resource "docker_image" "app" {
 # 2. Container Resource (The Flask App)
 # ----------------------------------------------------
 resource "docker_container" "app" {
-  name  = var.container_name # e.g., "flask-app-service"
+  count = var.module_count
+  name  = "${var.container_name}-${var.instance_id + 1}"
   image = docker_image.app.name
 
   # Ensure the container is restarted if it stops unexpectedly
@@ -32,7 +37,7 @@ resource "docker_container" "app" {
   # so you can access the app from your host machine (e.g., http://localhost:8888)
   ports {
     internal = var.internal_port # 5000 (from your app.run)
-    external = var.external_port # e.g., 8888
+    external = var.external_port + var.instance_id + local.staging_bonus + local.prod_bonus
   }
 
   # Connect to the same Docker network as the database container

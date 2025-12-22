@@ -15,25 +15,45 @@ terraform {
   }
 }
 
+locals {
+  # 1. Configuration Map for each environment
+  env_specs = {
+    default = { web_replicas = 1, app_replicas = 1, db_replicas = 1 }
+    dev     = { web_replicas = 1, app_replicas = 1, db_replicas = 1 }
+    staging = { web_replicas = 2, app_replicas = 2, db_replicas = 1 }
+    prod    = { web_replicas = 3, app_replicas = 3, db_replicas = 1 }
+  }
+
+  # 2. Extract settings for the active workspace (falls back to 'default' if not found)
+  settings = lookup(local.env_specs, terraform.workspace, local.env_specs["default"])
+}
+
 provider "docker" {
   alias = "root_docker"
 }
+# 1. Query the existing network
+data "docker_network" "external_net" {
+  name = "shared_storage_network"
+}
 resource "docker_network" "custom_net" {
-  name = "nginx_network"
+  # This creates: nginx_network_dev, nginx_network_prod, etc.
+  name = "nginx_network_${terraform.workspace}"
 }
 
 module "web" {
   source         = "./modules/web"
-  instance_count = 3
-  container_name = "nginx"
+  container_name = "nginx_${terraform.workspace}"
+  count = local.settings.web_replicas
+  instance_id    = count.index
   external_port  = 8081
   network_name   = docker_network.custom_net.name
 }
 module "app" {
   source = "./modules/app"
-
+  count = local.settings.app_replicas
+  instance_id    = count.index
   # Configuration determined from the running container:
-  container_name = "weather-api"
+  container_name = "weather-api_${terraform.workspace}"
   image_tag      = "app:v1"
   external_port  = 8888
   internal_port  = 5000
@@ -56,7 +76,8 @@ module "app" {
 
 module "db" {
   source = "./modules/database"
-
+  count = local.settings.db_replicas
+  container_name = "mysql-${terraform.workspace}"
   # 1. Update the Container Name (now hosting MySQL)
   db_name = "mysql-service"
 
@@ -72,3 +93,10 @@ module "db" {
   db_password = var.db_password
   db_schema   = "flask_db"
 }
+
+#resource "docker_container" "monitoring" {
+  # IF workspace is prod, count = 1. IF NOT, count = 0 (resource doesn't exist).
+#  count = terraform.workspace == "prod" ? 1 : 0
+#  name  = "prometheus-prod"
+#  image = "prom/prometheus"
+#}
