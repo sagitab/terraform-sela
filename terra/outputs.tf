@@ -17,3 +17,15 @@
 #  description = "Internal Docker network IPs of all Nginx containers"
 #  value       = module.web.container_ips
 #}
+
+data "docker_network" "dev" {
+  name = "network_dev"
+}
+
+output "dev_network_details" {
+  value = {
+    id     = data.docker_network.dev.id
+    # We use tolist() to fix the "Invalid index" error
+    subnet = tolist(data.docker_network.dev.ipam_config)[0].subnet
+  }
+}

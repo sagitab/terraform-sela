@@ -18,7 +18,7 @@ locals {
 resource "docker_image" "app" {
   # This should reference the image that contains your Flask application
   # For example: "sagisen/whether_api:latest"
-  name         = var.image_tag
+  name         = "app@sha256:6d92571c5ad9b7f3b27b8c573d0ff6167cea2ada4034337b42de992e3296b5bf"
   keep_locally = true # Keep the image even after 'terraform destroy'
 }
 

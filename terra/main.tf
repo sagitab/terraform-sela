@@ -31,13 +31,19 @@ locals {
 provider "docker" {
   alias = "root_docker"
 }
-# 1. Query the existing network
-data "docker_network" "external_net" {
-  name = "shared_storage_network"
+# Query the Development network
+data "docker_network" "dev_net" {
+  name = "network_dev"
 }
-resource "docker_network" "custom_net" {
-  # This creates: nginx_network_dev, nginx_network_prod, etc.
-  name = "nginx_network_${terraform.workspace}"
+
+# Query the Staging network
+data "docker_network" "staging_net" {
+  name = "network_staging"
+}
+
+# Query the Production network
+data "docker_network" "prod_net" {
+  name = "network_prod"
 }
 
 module "web" {
@@ -46,7 +52,7 @@ module "web" {
   count = local.settings.web_replicas
   instance_id    = count.index
   external_port  = 8081
-  network_name   = docker_network.custom_net.name
+  network_name   = "network_${terraform.workspace}"
 }
 module "app" {
   source = "./modules/app"
@@ -59,7 +65,7 @@ module "app" {
   internal_port  = 5000
 
   # Reusing the Docker network defined earlier
-  network_name = docker_network.custom_net.name
+  network_name = "network_${terraform.workspace}"
 
   # Environment Variables (set to default/empty if not needed)
   environment_vars = {}
@@ -85,7 +91,7 @@ module "db" {
   image_tag = "mysql:8.0"
 
   # 3. Network remains the same (connecting DB and App)
-  network_name = docker_network.custom_net.name
+  network_name = "network_${terraform.workspace}"
 
   # 4. Credentials remain the same, as they map correctly to the new
   #    MYSQL_USER, MYSQL_PASSWORD, and MYSQL_DATABASE variables inside the module.

@@ -17,7 +17,7 @@ resource "docker_volume" "db_data" {
 # 2. Docker Image
 resource "docker_image" "db" {
   # This will pull the tag defined by the root module, e.g., 'mysql:8.0'
-  name         = var.image_tag 
+  name         = "mysql@sha256:0275a35e79c60caae68fac520602d9f6897feb9b0941a1471196b1a01760e581"
   force_remove = true
 }
 
