@@ -47,7 +47,7 @@ data "docker_network" "prod_net" {
 }
 
 module "web" {
-  source         = "./modules/web"
+  source = "git::https://github.com/sagitab/terra-module-web.git?ref=v1.0.1"
   container_name = "nginx_${terraform.workspace}"
   count = local.settings.web_replicas
   instance_id    = count.index

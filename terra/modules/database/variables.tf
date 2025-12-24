@@ -14,6 +14,13 @@ variable "image_tag" {
   type        = string
 }
 
+variable "image_digest" {
+  description = "The Docker image digest for the application (Node.js or Python app)."
+  type        = string
+  default     = "mysql@sha256:0275a35e79c60caae68fac520602d9f6897feb9b0941a1471196b1a01760e581"
+}
+
+
 variable "network_name" {
   description = "The name of the custom Docker network to attach the DB to."
   type        = string

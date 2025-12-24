@@ -15,6 +15,12 @@ variable "image_tag" {
   type        = string
 }
 
+variable "image_digest" {
+  description = "The Docker image digest for the application (Node.js or Python app)."
+  type        = string
+  default     = "app@sha256:64141b4e9fc6050e25220322b13ae96f294761725489617e4dd315a7971a07ba"
+}
+
 variable "network_name" {
   description = "The name of the custom Docker network to attach the app to."
   type        = string

@@ -12,13 +12,19 @@ locals {
   staging_bonus = terraform.workspace == "staging" ? 10 : 0
   prod_bonus = terraform.workspace == "prod" ? 20 : 0
 }
+
+# 1. Always look up the latest image info
+data "docker_image" "app_data" {
+  name = "app:v1"
+}
+
 # ----------------------------------------------------
 # 1. Image Resource (Your Application Image)
 # ----------------------------------------------------
 resource "docker_image" "app" {
   # This should reference the image that contains your Flask application
   # For example: "sagisen/whether_api:latest"
-  name         = "app@sha256:6d92571c5ad9b7f3b27b8c573d0ff6167cea2ada4034337b42de992e3296b5bf"
+  name         = var.image_digest
   keep_locally = true # Keep the image even after 'terraform destroy'
 }
 

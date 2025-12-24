@@ -20,6 +20,12 @@ variable "image_tag" {
   default     = "nginx:latest"
 }
 
+variable "image_digest" {
+  description = "The Docker image digest for the application (Node.js or Python app)."
+  type        = string
+  default     = "nginx@sha256:fb01117203ff38c2f9af91db1a7409459182a37c87cced5cb442d1d8fcc66d19"
+}
+
 variable "network_name" {
   description = "Docker network name to attach the containers to"
   type        = string

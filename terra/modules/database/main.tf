@@ -8,16 +8,20 @@ terraform {
   }
 }
 
+locals {
+  my_db_name = var.db_name
+}
+
 # 1. Docker Volume for Data Persistence
 # This ensures MySQL data persists across container restarts.
 resource "docker_volume" "db_data" {
-  name = "${var.db_name}-data"
+  name = "${local.my_db_name}-data"
 }
 
 # 2. Docker Image
 resource "docker_image" "db" {
   # This will pull the tag defined by the root module, e.g., 'mysql:8.0'
-  name         = "mysql@sha256:0275a35e79c60caae68fac520602d9f6897feb9b0941a1471196b1a01760e581"
+  name         = var.image_digest
   force_remove = true
 }
 
@@ -40,7 +44,7 @@ env = [
     # Required to set the root user password (used by app if DB_USER=root)
     "MYSQL_ROOT_PASSWORD=${var.db_password}", 
     # Required to create the database schema
-    "MYSQL_DATABASE=${var.db_name}",         
+    "MYSQL_DATABASE=${local.my_db_name}",         
   ]
 
   # Volume: Mount the persistent volume to the MySQL data directory
