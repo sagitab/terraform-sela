@@ -60,8 +60,28 @@ resource "docker_container" "app" {
     "DB_NAME=${var.db_name}",      # Note the app expects 'DB_NAME'
     "FLASK_ENV=development"        # Example Flask environment setting
   ]
+  #provisioner "local-exec" {
+    # This runs: ./health.sh dev (or prod/staging)
+    #command = "sh ./health_script.sh ${terraform.workspace} ${self.ports[0].external}"
+  #}
 
   # Ensure the DB container is ready before attempting to create the app container
   # This reduces connection errors on initial deployment.
   # need to add depend on
+}
+
+resource "null_resource" "health_check" {
+  # Match the count of the app containers
+  count = var.module_count
+
+  triggers = {
+    # Reference 'docker_container.app' and use [count.index]
+    container_id = docker_container.app[count.index].id
+    script_hash  = filemd5("health_script.sh")
+  }
+
+  provisioner "local-exec" {
+    # Access the specific external port for THIS instance
+    command = "sh ./health_script.sh ${terraform.workspace} ${docker_container.app[count.index].ports[0].external}"
+  }
 }
