@@ -10,3 +10,7 @@ output "container_name" {
   value       = docker_container.app.name
 }
 */
+
+output "container_ips" {
+  value = [for c in docker_container.app : c.network_data[0].ip_address]
+}

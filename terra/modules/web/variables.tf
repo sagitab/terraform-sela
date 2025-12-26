@@ -12,6 +12,11 @@ variable "container_name" {
 variable "external_port" {
   description = "Host port for the first container (subsequent containers increment this port)"
   type        = number
+  validation {
+    # Ensures the port is in the valid user/dynamic range (1024-65535)
+    condition     = var.external_port >= 1024 && var.external_port <= 65535
+    error_message = "The external_port must be in the range 1024-65535 to avoid system conflicts."
+  }
 }
 
 variable "image_tag" {

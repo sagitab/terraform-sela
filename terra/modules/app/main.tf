@@ -21,6 +21,7 @@ data "docker_image" "app_data" {
 # ----------------------------------------------------
 # 1. Image Resource (Your Application Image)
 # ----------------------------------------------------
+
 resource "docker_image" "app" {
   # This should reference the image that contains your Flask application
   # For example: "sagisen/whether_api:latest"
@@ -64,6 +65,19 @@ resource "docker_container" "app" {
     # This runs: ./health.sh dev (or prod/staging)
     #command = "sh ./health_script.sh ${terraform.workspace} ${self.ports[0].external}"
   #}
+
+  lifecycle {
+    precondition {
+      # This checks if the ID of the image we looked for is not empty
+      condition     = var.image_digest != ""
+      error_message = "The Docker image digest ${var.image_digest} could not be found in the registry. Please check the digest value."
+    }
+    
+    postcondition {
+      condition     = self.must_run == true
+      error_message = "Runtime Error: Container ${self.name} crashed immediately after starting."
+    }
+  }
 
   # Ensure the DB container is ready before attempting to create the app container
   # This reduces connection errors on initial deployment.

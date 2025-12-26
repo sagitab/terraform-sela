@@ -29,7 +29,6 @@ variable "network_name" {
 variable "db_user" {
   description = "The MySQL database user name."
   type        = string
-  sensitive   = true # Mark password as sensitive
 }
 
 variable "db_password" {

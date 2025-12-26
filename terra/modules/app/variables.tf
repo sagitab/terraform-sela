@@ -29,11 +29,23 @@ variable "network_name" {
 variable "external_port" {
   description = "The host port to expose the application on."
   type        = number
+
+  validation {
+    # Ensures the port is in the valid user/dynamic range (1024-65535)
+    condition     = var.external_port >= 1024 && var.external_port <= 65535
+    error_message = "The external_port must be in the range 1024-65535 to avoid system conflicts."
+  }
 }
 
 variable "internal_port" {
   description = "The port the application listens on inside the container."
   type        = number
+
+  validation {
+    # Since your Flask app is likely hardcoded to a specific port
+    condition     = var.internal_port == 5000
+    error_message = "The internal_port must be exactly 5000 because the Python Flask app is hardcoded to listen on port 5000."
+  }
 }
 
 variable "environment_vars" {

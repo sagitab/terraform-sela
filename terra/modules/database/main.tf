@@ -53,7 +53,12 @@ env = [
     container_path = "/var/lib/mysql" 
     volume_name    = docker_volume.db_data.name
   }
-  
+  /*
+  lifecycle {
+    # If someone tries to destroy this, Terraform will throw an error
+    prevent_destroy = true
+  }
+  */
   restart = "unless-stopped"
 
 }
