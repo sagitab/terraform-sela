@@ -15,7 +15,8 @@ locals {
 # 1. Docker Volume for Data Persistence
 # This ensures MySQL data persists across container restarts.
 resource "docker_volume" "db_data" {
-  name = "${local.my_db_name}-data"
+  # This makes the volume unique (e.g., mysql-data-prod, mysql-data-staging)
+  name = "${local.my_db_name}-data-${terraform.workspace}"
 }
 
 # 2. Docker Image
@@ -34,6 +35,10 @@ resource "docker_container" "db" {
   # unless explicitly mapped in the root configuration.
   networks_advanced {
     name = var.network_name
+  }
+  ports {
+    internal = 3306  # This is the standard MySQL port inside the container
+    external = var.db_port # This is the port on your computer 
   }
   
   # Environment Variables for MySQL Initialization

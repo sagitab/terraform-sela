@@ -55,7 +55,7 @@ resource "docker_container" "app" {
   # Environment Variables (CRITICAL for the Python app)
   # These match the os.getenv() calls in your Python code exactly.
   env = [
-    "DB_HOST=${var.db_host}",      # The hostname/service name of the DB container
+    "DB_HOST=${var.db_host}-${terraform.workspace}",      # The hostname/service name of the DB container
     "DB_USER=${var.db_user}",
     "DB_PASS=${var.db_password}",  # Note the app expects 'DB_PASS'
     "DB_NAME=${var.db_name}",      # Note the app expects 'DB_NAME'

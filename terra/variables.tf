@@ -45,3 +45,9 @@ variable "db_name" {
   type        = string
   default     = "flask_db"
 }
+
+variable "db_port" {
+  type    = number
+  default = 3306
+}
+

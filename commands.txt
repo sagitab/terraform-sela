@@ -1,5 +1,5 @@
 #command to run init sql to new db container
-docker exec -i mysql-service mysql -u root -p{pass} < ./modules/database/setup.sql
+docker exec -i mysql-prod mysql -u root -p{pass} < ./modules/database/setup.sql
 
 
 

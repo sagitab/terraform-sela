@@ -46,3 +46,9 @@ variable "container_name" {
   description = "The prefix for the database container name"
   type        = string
 }
+
+variable "db_port" {
+  description = "database port"
+  type        = number
+  default     = 3306
+}

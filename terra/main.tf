@@ -26,6 +26,8 @@ locals {
 
   # 2. Extract settings for the active workspace (falls back to 'default' if not found)
   settings = lookup(local.env_specs, terraform.workspace, local.env_specs["default"])
+  staging_bonus = terraform.workspace == "staging" ? 10 : 0
+  prod_bonus = terraform.workspace == "prod" ? 20 : 0
 }
 
 provider "docker" {
@@ -98,6 +100,8 @@ module "db" {
   db_user     = var.db_user
   db_password = var.db_password
   db_schema   = "flask_db"
+  db_port     = 3306 + local.staging_bonus + local.prod_bonus
+
 }
 
 #resource "docker_container" "monitoring" {
