@@ -1,6 +1,6 @@
-## Terraform multi-tier application with docker
+# Terraform multi-tier application with docker
 
-# 3 tier app
+## 3 tier app
 
 # App
 simple flask app that connect to mysql DB.
@@ -31,6 +31,7 @@ docker network create <network_name>
 
 # Setup the DB
 
+run this command 
 inside the db container run setup.sql in terra\modules\database\setup.sql
 
 # Workspaces
